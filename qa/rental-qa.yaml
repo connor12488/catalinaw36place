@@ -2,8 +2,8 @@ property:
   id: catalina-west-36-place
   name: "Catalina West 36 Place"
   contactFallback:
-    email: "[property manager email]"
-    phone: "[property manager phone]"
+    email: "Catalina.w36thPlace@gmail.com"
+    phone: "(213)-222-8057"
     message: "Please contact property management for the most accurate current information."
 
 qa:
@@ -13,7 +13,7 @@ qa:
       - "What is the monthly rent?"
       - "How much is rent?"
       - "What is the rental price?"
-    approvedAnswer: "The monthly rent is $1200."
+    approvedAnswer: "The monthly rent for a private suite, which includes a private bathroom, is $1,200. The monthly rent for a standard bedroom with a shared bathroom is $1,100. Shared bathrooms are used by two bedrooms."
     escalateWhen:
       - "User asks to negotiate rent."
       - "User asks about future pricing not in this approved answer."
@@ -59,7 +59,7 @@ qa:
       - "How long is the lease?"
       - "Is it month-to-month?"
       - "Is it an annual lease?"
-    approvedAnswer: "[Fill in approved lease length.]"
+    approvedAnswer: "The lease term is annual, beginning each August."
 
   - id: availability
     category: availability
@@ -78,7 +78,7 @@ qa:
       - "Can I schedule a tour?"
       - "How do showings work?"
       - "Can I see the property?"
-    approvedAnswer: "[Fill in showing instructions or contact fallback.]"
+    approvedAnswer: "If you would like to see the property please contact the phone number (213)-222-8057 or email Catalina.w36thPlace@gmail.com and we will have a property manager give you a tour at the soonest availability."
 
   - id: application-process
     category: leasing
@@ -127,7 +127,7 @@ qa:
       - "Is parking available?"
       - "Is parking assigned?"
       - "Where can I park?"
-    approvedAnswer: "[Fill in parking policy.]"
+    approvedAnswer: "Each unit comes with three parking spots. Each garage can house two cars and there is also one designated outside parking spot for each unit."
 
   - id: guest-parking
     category: parking
@@ -189,14 +189,14 @@ qa:
     questions:
       - "Is laundry available?"
       - "Is there a washer and dryer?"
-    approvedAnswer: "[Fill in laundry details.]"
+    approvedAnswer: "Each unit comes with a washer and a dryer accessible via qr code through an app. Each wash or dry cycle costs up to $1.50 helping to ensure secure and individual use by residents."
 
   - id: appliances
     category: amenities
     questions:
       - "What appliances are included?"
       - "Does the unit include appliances?"
-    approvedAnswer: "[Fill in appliance list.]"
+    approvedAnswer: "Each unit is equipped with amenities including a refrigerator, dishwasher, stove, and oven."
 
   - id: heating-cooling
     category: amenities
@@ -204,7 +204,7 @@ qa:
       - "Is there heat?"
       - "Is there air conditioning?"
       - "What heating or cooling is available?"
-    approvedAnswer: "[Fill in heating/cooling details.]"
+    approvedAnswer: "Each floor has its own dedicated thermostat, allowing residents to customize heating and cooling preferences independently."
 
   - id: storage
     category: amenities
@@ -220,7 +220,7 @@ qa:
       - "Is there a patio?"
       - "Is there a balcony?"
       - "Is there a yard?"
-    approvedAnswer: "[Fill in outdoor space details.]"
+    approvedAnswer: "Every unit includes a second-floor balcony, complemented by a spacious rooftop area offering a panoramic view of the city skyline."
 
   - id: accessibility
     category: property
@@ -298,5 +298,5 @@ qa:
       - "Who do I contact with questions?"
       - "How do I contact property management?"
       - "What is the property manager contact?"
-    approvedAnswer: "[Fill in property manager contact details.]"
+    approvedAnswer: "If you have any further questions you can contact the property manager at Catalina.w36thPlace@gmail.com or call the phone number (213)-222-8057."
 
