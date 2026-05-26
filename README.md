@@ -35,9 +35,24 @@ Out of scope:
 
 ## Runtime Flow
 
+```mermaid
+flowchart LR
+  tenant[Tenant or Applicant] --> website[Existing Static Website]
+  website -->|iframe /assistant| render[Render Web Service]
+  render --> api[Node.js Agent API]
+  api --> yaml[qa/rental-qa.yaml]
+  api --> match[Match Question to Approved Q&A]
+  match --> guardrails{Approved Answer?}
+  guardrails -->|No| fallback[Contact Property Management]
+  guardrails -->|Yes| openai[OpenAI Responses API]
+  openai --> response[Concise Tenant Answer]
+  fallback --> tenant
+  response --> tenant
+```
+
 ```text
 Tenant website
-  -> opens or iframes Render assistant URL
+  -> opens or iframes /assistant
   -> POST /api/chat
   -> agent loads qa/rental-qa.yaml
   -> agent matches tenant question to approved Q&A entry
@@ -144,6 +159,20 @@ I do not have an approved answer for that in the property Q&A. Please contact pr
 
 ## API Contract
 
+### Assistant Page
+
+`GET /assistant`
+
+Returns the iframe-ready tenant chat page. The static website can embed it with:
+
+```html
+<iframe
+  src="https://catalinaw36place.onrender.com/assistant"
+  title="Tenant Q&A Assistant"
+  style="width:100%; height:600px; border:0;"
+></iframe>
+```
+
 ### Chat
 
 `POST /api/chat`
@@ -243,6 +272,7 @@ npm run build
 
 Local API URLs:
 
+- `GET http://localhost:10000/assistant`
 - `GET http://localhost:10000/api/health`
 - `POST http://localhost:10000/api/chat`
 
@@ -284,13 +314,23 @@ Only `AI_API_KEY` is required for OpenAI calls. The contact variables are option
 
 ## Implementation Steps
 
+```mermaid
+flowchart TD
+  edit[Edit qa/rental-qa.yaml] --> commit[Commit Q&A Changes]
+  commit --> push[Push to GitHub]
+  push --> deploy[Render Redeploys Service]
+  deploy --> live[Updated Q&A Available in API]
+  live --> test[Test /api/chat]
+```
+
 1. Fill in approved answers in `qa/rental-qa.yaml`.
 2. Commit and push changes to GitHub.
 3. Create or sync the Render service from `render.yaml`.
 4. Set `AI_API_KEY`, `ALLOWED_ORIGIN`, and optional contact overrides in Render.
 5. Confirm `GET /api/health` returns `qaSource: yaml`.
 6. Test sample questions against `POST /api/chat`.
-7. Add the Render assistant URL to the existing static website.
+7. Test the iframe page at `GET /assistant`.
+8. Add the Render assistant URL to the existing static website.
 
 ## Testing Checklist
 
@@ -301,6 +341,7 @@ Only `AI_API_KEY` is required for OpenAI calls. The contact variables are option
 - Rent, fees, lease terms, and availability are never invented.
 - API keys are not visible in browser code or responses.
 - Render environment variables are configured.
+- `/assistant` loads the chat page.
 - `/api/health` returns `ok` and `qaSource: yaml`.
 - The static website can open the hosted assistant URL.
 
