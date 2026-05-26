@@ -1,0 +1,19 @@
+{
+  "name": "catalinaw36place",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "agent"
+  ],
+  "scripts": {
+    "dev": "npm --workspace agent run dev",
+    "build": "npm --workspace agent run build",
+    "start": "npm --workspace agent run start",
+    "test": "npm --workspace agent run test",
+    "typecheck": "npm --workspace agent run typecheck"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
+

@@ -1,0 +1,302 @@
+property:
+  id: catalina-west-36-place
+  name: "Catalina West 36 Place"
+  contactFallback:
+    email: "[property manager email]"
+    phone: "[property manager phone]"
+    message: "Please contact property management for the most accurate current information."
+
+qa:
+  - id: rent-monthly
+    category: rent
+    questions:
+      - "What is the monthly rent?"
+      - "How much is rent?"
+      - "What is the rental price?"
+    approvedAnswer: "[Fill in approved rent amount and any timing notes.]"
+    escalateWhen:
+      - "User asks to negotiate rent."
+      - "User asks about future pricing not in this approved answer."
+
+  - id: rent-due-date
+    category: rent
+    questions:
+      - "When is rent due?"
+      - "Is there a grace period?"
+      - "What day do I pay rent?"
+    approvedAnswer: "[Fill in rent due date and approved grace-period language.]"
+    escalateWhen:
+      - "User asks for a late fee waiver."
+      - "User asks for a payment arrangement."
+
+  - id: deposit
+    category: fees
+    questions:
+      - "What is the security deposit?"
+      - "Is the deposit refundable?"
+      - "How much is the deposit?"
+    approvedAnswer: "[Fill in approved deposit details.]"
+    escalateWhen:
+      - "User asks for legal interpretation of deposit rules."
+
+  - id: application-fee
+    category: fees
+    questions:
+      - "Is there an application fee?"
+      - "How much does it cost to apply?"
+    approvedAnswer: "[Fill in approved application fee details.]"
+
+  - id: move-in-costs
+    category: fees
+    questions:
+      - "How much is due before move-in?"
+      - "What do I need to pay to move in?"
+    approvedAnswer: "[Fill in first month, deposit, and other move-in cost details.]"
+
+  - id: lease-length
+    category: lease
+    questions:
+      - "How long is the lease?"
+      - "Is it month-to-month?"
+      - "Is it an annual lease?"
+    approvedAnswer: "[Fill in approved lease length.]"
+
+  - id: availability
+    category: availability
+    questions:
+      - "Is the unit available?"
+      - "When can I move in?"
+      - "What is the availability date?"
+    approvedAnswer: "[Fill in current availability process. Escalate if availability changes often.]"
+    escalateWhen:
+      - "User asks for real-time availability."
+      - "Approved availability is not current."
+
+  - id: showings
+    category: availability
+    questions:
+      - "Can I schedule a tour?"
+      - "How do showings work?"
+      - "Can I see the property?"
+    approvedAnswer: "[Fill in showing instructions or contact fallback.]"
+
+  - id: application-process
+    category: leasing
+    questions:
+      - "How do I apply?"
+      - "What documents are required?"
+      - "What is the application process?"
+    approvedAnswer: "[Fill in approved application process.]"
+
+  - id: screening
+    category: leasing
+    questions:
+      - "What are the rental requirements?"
+      - "Do you check credit?"
+      - "What screening do you do?"
+    approvedAnswer: "[Fill in approved screening summary. Avoid discriminatory language.]"
+    escalateWhen:
+      - "User asks about approval odds."
+      - "User asks about exceptions to screening criteria."
+
+  - id: utilities-included
+    category: utilities
+    questions:
+      - "Which utilities are included?"
+      - "Are utilities included?"
+    approvedAnswer: "[Fill in included utilities.]"
+
+  - id: utilities-tenant-paid
+    category: utilities
+    questions:
+      - "Which utilities does the tenant pay?"
+      - "What utilities am I responsible for?"
+    approvedAnswer: "[Fill in tenant-paid utilities.]"
+
+  - id: internet
+    category: utilities
+    questions:
+      - "Is internet included?"
+      - "What internet providers are available?"
+      - "Is Wi-Fi included?"
+    approvedAnswer: "[Fill in approved internet details.]"
+
+  - id: parking
+    category: parking
+    questions:
+      - "Is parking available?"
+      - "Is parking assigned?"
+      - "Where can I park?"
+    approvedAnswer: "[Fill in parking policy.]"
+
+  - id: guest-parking
+    category: parking
+    questions:
+      - "Is guest parking available?"
+      - "Where can guests park?"
+    approvedAnswer: "[Fill in guest parking policy.]"
+
+  - id: pets
+    category: pets
+    questions:
+      - "Are pets allowed?"
+      - "Is there a pet deposit?"
+      - "Is there pet rent?"
+      - "What is the pet policy?"
+    approvedAnswer: "[Fill in pet policy, fees, and restrictions.]"
+
+  - id: service-animals
+    category: pets
+    questions:
+      - "What about service animals?"
+      - "What about assistance animals?"
+      - "Are emotional support animals allowed?"
+    approvedAnswer: "[Escalate to property management; avoid legal advice.]"
+    escalateWhen:
+      - "Always escalate assistance animal questions."
+
+  - id: smoking
+    category: rules
+    questions:
+      - "Is smoking allowed?"
+      - "Can I smoke on the property?"
+    approvedAnswer: "[Fill in smoking policy.]"
+
+  - id: quiet-hours
+    category: rules
+    questions:
+      - "Are there quiet hours?"
+      - "What are quiet hours?"
+    approvedAnswer: "[Fill in quiet-hours policy.]"
+
+  - id: guests
+    category: rules
+    questions:
+      - "Can guests stay overnight?"
+      - "What is the guest policy?"
+    approvedAnswer: "[Fill in guest policy.]"
+
+  - id: subletting
+    category: rules
+    questions:
+      - "Can I sublet?"
+      - "Can I Airbnb the unit?"
+      - "Are short-term rentals allowed?"
+    approvedAnswer: "[Fill in subletting/short-term rental policy.]"
+
+  - id: laundry
+    category: amenities
+    questions:
+      - "Is laundry available?"
+      - "Is there a washer and dryer?"
+    approvedAnswer: "[Fill in laundry details.]"
+
+  - id: appliances
+    category: amenities
+    questions:
+      - "What appliances are included?"
+      - "Does the unit include appliances?"
+    approvedAnswer: "[Fill in appliance list.]"
+
+  - id: heating-cooling
+    category: amenities
+    questions:
+      - "Is there heat?"
+      - "Is there air conditioning?"
+      - "What heating or cooling is available?"
+    approvedAnswer: "[Fill in heating/cooling details.]"
+
+  - id: storage
+    category: amenities
+    questions:
+      - "Is storage available?"
+      - "Is there extra storage?"
+    approvedAnswer: "[Fill in storage details.]"
+
+  - id: outdoor-space
+    category: amenities
+    questions:
+      - "Is there outdoor space?"
+      - "Is there a patio?"
+      - "Is there a balcony?"
+      - "Is there a yard?"
+    approvedAnswer: "[Fill in outdoor space details.]"
+
+  - id: accessibility
+    category: property
+    questions:
+      - "Are there stairs?"
+      - "Is the unit accessible?"
+      - "Is there elevator access?"
+    approvedAnswer: "[Fill in factual accessibility details. Avoid making compliance claims unless approved.]"
+
+  - id: trash-recycling
+    category: rules
+    questions:
+      - "Where do trash and recycling go?"
+      - "How does trash pickup work?"
+    approvedAnswer: "[Fill in trash/recycling instructions.]"
+
+  - id: mail-packages
+    category: property
+    questions:
+      - "How are mail and packages handled?"
+      - "Where do packages go?"
+    approvedAnswer: "[Fill in mail/package details.]"
+
+  - id: maintenance
+    category: maintenance
+    questions:
+      - "How do I report maintenance?"
+      - "Who do I contact for repairs?"
+      - "How do maintenance requests work?"
+    approvedAnswer: "[Fill in maintenance request process.]"
+
+  - id: emergency-maintenance
+    category: maintenance
+    questions:
+      - "What counts as an emergency?"
+      - "Who do I call for emergency maintenance?"
+      - "What if there is an urgent repair?"
+    approvedAnswer: "[Fill in emergency maintenance instructions if approved.]"
+    escalateWhen:
+      - "User reports an active emergency."
+
+  - id: lockouts
+    category: maintenance
+    questions:
+      - "What if I am locked out?"
+      - "Who do I call for a lockout?"
+    approvedAnswer: "[Fill in lockout policy/contact.]"
+
+  - id: move-in
+    category: move-in
+    questions:
+      - "What is the move-in process?"
+      - "How do I get keys?"
+      - "What do I need to do before moving in?"
+    approvedAnswer: "[Fill in move-in steps, keys, inspection, utilities setup.]"
+
+  - id: move-out
+    category: move-out
+    questions:
+      - "What is the move-out process?"
+      - "How much notice do I need to give?"
+      - "What should I do before moving out?"
+    approvedAnswer: "[Fill in move-out notice, cleaning, keys, inspection.]"
+
+  - id: renters-insurance
+    category: lease
+    questions:
+      - "Is renters insurance required?"
+      - "Do I need renter's insurance?"
+    approvedAnswer: "[Fill in insurance requirement.]"
+
+  - id: contact
+    category: contact
+    questions:
+      - "Who do I contact with questions?"
+      - "How do I contact property management?"
+      - "What is the property manager contact?"
+    approvedAnswer: "[Fill in property manager contact details.]"
+

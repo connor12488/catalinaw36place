@@ -1,92 +1,61 @@
 # Catalina West 36 Place Tenant Q&A Assistant
 
-This project is not responsible for redesigning or rebuilding the rental website. The website can remain static. The scope is to define an approved rental Q&A knowledge base and connect it to a hosted AI agent that tenants or applicants can open from the existing website.
+This project adds a lightweight Tenant Q&A Assistant for an existing static rental website. It does not redesign the website. The first version uses a simple YAML file as the approved Q&A source, so no PostgreSQL database is required.
 
-The assistant should answer only from approved property Q&A content. If an answer is missing, uncertain, legal in nature, or requires property manager approval, the assistant should route the user to the contact fallback.
+## Recommended Setup
+
+Use:
+
+- Render Free Web Service to host the agent API.
+- `qa/rental-qa.yaml` as the approved Q&A knowledge base.
+- OpenAI Responses API for answer wording.
+- A simple link or iframe from the existing website to the Render-hosted assistant.
+
+This keeps Render infrastructure free for the first version. OpenAI API usage is still paid separately, but for short rental Q&A answers the expected usage should usually be small.
 
 ## Scope
 
 In scope:
 
-- Define the rental Q&A list.
-- Store approved answers in a simple structured file.
-- Host an AI agent endpoint on Render or another agent platform.
-- Keep API keys and private configuration outside the static website.
-- Provide a simple embed/link target for the existing website.
+- Define and maintain the rental Q&A list in YAML.
+- Host a small Node.js agent API on Render.
+- Match tenant questions to approved YAML answers.
+- Use OpenAI only to rewrite approved answers into concise tenant-facing responses.
+- Escalate to property management when an approved answer is missing.
 
 Out of scope:
 
 - Website redesign.
-- Full rental application workflow.
+- PostgreSQL database setup.
+- Admin UI for editing Q&A.
 - Rent payment processing.
 - Maintenance ticket processing.
 - Legal, tax, financial, or fair housing advice.
 - Answering from unapproved internet sources.
 
-## Recommended Approach
+## Runtime Flow
 
-Use Render to host a small backend agent service, and use OpenAI Responses API or a similar agent runtime to answer questions from the approved Q&A file.
+```text
+Tenant website
+  -> opens or iframes Render assistant URL
+  -> POST /api/chat
+  -> agent loads qa/rental-qa.yaml
+  -> agent matches tenant question to approved Q&A entry
+  -> agent calls OpenAI Responses API
+  -> agent returns concise answer or escalation fallback
+```
 
-Recommended MVP:
+If a matched YAML answer still contains placeholder text, the agent intentionally escalates instead of showing the placeholder to tenants.
 
-- Existing static website links to the assistant.
-- Render Web Service hosts `POST /api/chat`.
-- Agent loads `qa/rental-qa.yaml`.
-- Agent matches the question to approved Q&A entries.
-- Agent returns a concise answer plus a contact fallback when needed.
-- Secrets such as AI provider keys are stored in Render environment variables.
+## Q&A Source
 
-Why this approach:
-
-- The static website stays simple.
-- The agent can be deployed independently.
-- API keys are never exposed in browser code.
-- The knowledge base is easy to review before launch.
-- The first version does not need vector search or a database.
-
-## Suggested Agent Options
-
-### Option 1: Render + OpenAI Responses API
-
-Best default choice for this project.
-
-- Host a small Node.js/Express or Python/FastAPI service on Render.
-- Use the OpenAI Responses API for model responses.
-- Keep the rental Q&A file in the repo.
-- Add retrieval logic that selects the best Q&A entries before calling the model.
-- Return a controlled, grounded answer.
-
-Use this when you want full control over prompts, safety rules, logs, and future integrations.
-
-### Option 2: Managed Chatbot Platform
-
-Examples: Botpress, Voiceflow, Chatbase, Intercom Fin, or similar hosted chatbot tools.
-
-- Faster setup.
-- Less code.
-- Usually includes an embeddable widget.
-- Less control over exact retrieval, privacy behavior, and deployment shape.
-
-Use this when speed matters more than customization.
-
-### Option 3: Workflow Agent Platform
-
-Examples: Dify, Flowise, LangGraph, or similar agent workflow tools.
-
-- Useful if you want visual flow editing or more complex future routing.
-- More operational complexity than the MVP needs.
-
-Use this if the assistant will later connect to scheduling, maintenance, CRM, or ticketing systems.
-
-## Q&A Knowledge File
-
-Create the primary content file here:
+Runtime Q&A lives here:
 
 ```text
 qa/rental-qa.yaml
 ```
 
-Use this structure:
+The YAML structure is:
 
 ```yaml
 property:
@@ -98,23 +67,21 @@ property:
     message: "Please contact property management for the most accurate current information."
 
 qa:
-  - id: rent-monthly
-    category: rent
+  - id: pets
+    category: pets
     questions:
-      - "What is the monthly rent?"
-      - "How much is rent?"
-      - "What is the rental price?"
-    approvedAnswer: "[Fill in approved monthly rent answer.]"
+      - "Are pets allowed?"
+      - "What is the pet policy?"
+    approvedAnswer: "[Fill in pet policy, fees, and restrictions.]"
     escalateWhen:
-      - "User asks to negotiate rent."
-      - "User asks about future pricing not in the approved answer."
+      - "User asks for legal interpretation or an exception."
 ```
 
-Do not deploy the assistant while placeholder answers remain.
+Do not launch publicly until every placeholder answer has been replaced with approved property-manager language.
 
 ## Required Q&A List
 
-Each item below should be filled in by the property owner or property manager before launch.
+Each item below should have an approved answer in `qa/rental-qa.yaml`.
 
 | ID | Category | Tenant Questions | Approved Answer |
 | --- | --- | --- | --- |
@@ -160,11 +127,12 @@ Each item below should be filled in by the property owner or property manager be
 The assistant should route the user to property management when:
 
 - The answer is missing from `qa/rental-qa.yaml`.
+- The approved answer is still placeholder text.
 - The user asks for legal advice.
 - The user asks to negotiate rent, deposit, or lease terms.
 - The user asks about application approval odds.
 - The user asks about protected-class or fair-housing-sensitive topics.
-- The user asks for current availability and the Q&A file is not guaranteed current.
+- The user asks for current availability and the YAML content is not guaranteed current.
 - The user reports an emergency.
 - The user provides sensitive personal information.
 
@@ -174,32 +142,7 @@ Standard escalation answer:
 I do not have an approved answer for that in the property Q&A. Please contact property management for the most accurate current information.
 ```
 
-## Agent Behavior
-
-The agent must:
-
-- Answer from approved Q&A content only.
-- Keep answers short and practical.
-- Say when information is unavailable.
-- Never invent rent, deposits, fees, lease dates, policies, or availability.
-- Avoid legal advice.
-- Avoid collecting sensitive personal information.
-- Include the contact fallback when escalation is recommended.
-
-Suggested system instruction:
-
-```text
-You are the Tenant Q&A Assistant for Catalina West 36 Place.
-Answer using only the approved Q&A entries provided to you.
-If no approved entry answers the question, say you do not have that information and provide the property management contact fallback.
-Do not invent rent amounts, deposits, fees, lease terms, dates, policies, or availability.
-Do not provide legal, tax, financial, or fair housing advice.
-Keep answers concise, friendly, and practical.
-```
-
-## Minimal API Contract
-
-The existing website only needs to link to, iframe, or open the hosted assistant URL. The hosted agent service handles the actual Q&A.
+## API Contract
 
 ### Chat
 
@@ -218,7 +161,7 @@ Response:
 
 ```json
 {
-  "answer": "Approved answer from the Q&A file, or the standard escalation answer.",
+  "answer": "Approved answer from qa/rental-qa.yaml, or the standard escalation answer.",
   "matchedQuestionId": "pets",
   "escalationRecommended": false
 }
@@ -232,15 +175,19 @@ Response:
 
 ```json
 {
-  "status": "ok"
+  "status": "ok",
+  "qaSource": "yaml"
 }
 ```
 
-## Suggested Folder Structure
+## Project Layout
 
 ```text
 catalinaw36place/
   README.md
+  render.yaml
+  .env.example
+  package.json
   qa/
     rental-qa.yaml
     sample-tenant-questions.json
@@ -252,60 +199,98 @@ catalinaw36place/
       loadQa.ts
       matchQuestion.ts
       guardrails.ts
+      systemPrompt.ts
+      types.ts
     tests/
       answerQuestion.test.ts
       guardrails.test.ts
       matchQuestion.test.ts
     package.json
-  deploy/
-    render.yaml
-  .env.example
-  package.json
 ```
 
 Folder responsibilities:
 
-- `qa`: approved rental Q&A content and sample questions.
-- `agent`: small hosted API that answers questions from the Q&A file.
-- `deploy`: Render deployment configuration.
+- `qa`: approved rental Q&A content and sample tenant questions.
+- `agent`: Render-hosted API that answers questions from YAML.
+- `render.yaml`: Render Free Web Service configuration.
 - `.env.example`: expected environment variable names, without secret values.
 
-## Render Deployment Plan
+## Local Development
 
-Use one Render Web Service for the agent API.
+Install dependencies:
 
-Suggested Render service:
+```bash
+npm install
+```
 
-- Runtime: Node.js or Python.
-- Build command: install dependencies and run tests.
-- Start command: start the API server.
-- Health check path: `/api/health`.
-- Environment variables: set in Render, not committed to git.
+Run locally:
 
-Example environment variables:
+```bash
+npm run dev
+```
+
+Run tests:
+
+```bash
+npm test
+```
+
+Build:
+
+```bash
+npm run build
+```
+
+Local API URLs:
+
+- `GET http://localhost:10000/api/health`
+- `POST http://localhost:10000/api/chat`
+
+Example local chat request:
+
+```bash
+curl -X POST http://localhost:10000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message":"Are pets allowed?"}'
+```
+
+## Render Deployment
+
+Use one Render Free Web Service for the agent API.
+
+Render service settings:
+
+- Runtime: Node.js.
+- Plan: Free.
+- Build command: `npm install && npm run build && npm test`
+- Start command: `npm start`
+- Health check path: `/api/health`
+
+Environment variables:
 
 ```bash
 AI_PROVIDER=openai
-AI_MODEL=replace-with-selected-model
+AI_MODEL=gpt-5.4-mini
 AI_API_KEY=replace-with-server-side-secret
 PROPERTY_ID=catalina-west-36-place
+QA_FILE_PATH=qa/rental-qa.yaml
 ALLOWED_ORIGIN=https://your-rental-website.example
-CONTACT_EMAIL=manager@example.com
-CONTACT_PHONE=555-555-5555
+CONTACT_EMAIL=replace-with-property-manager-email
+CONTACT_PHONE=replace-with-property-manager-phone
 LOG_LEVEL=info
 ```
 
+Only `AI_API_KEY` is required for OpenAI calls. The contact variables are optional overrides for the YAML fallback contact details.
+
 ## Implementation Steps
 
-1. Create `qa/rental-qa.yaml` from the Q&A list above.
-2. Replace every placeholder with approved property manager language.
-3. Build the agent API with `POST /api/chat` and `GET /api/health`.
-4. Add exact-match and fuzzy-match logic against the Q&A list.
-5. Add guardrails and escalation rules.
-6. Connect the agent to the selected AI provider.
-7. Deploy the agent service to Render.
-8. Add a link or iframe target from the existing static website to the Render agent URL.
-9. Test the required Q&A list before launch.
+1. Fill in approved answers in `qa/rental-qa.yaml`.
+2. Commit and push changes to GitHub.
+3. Create or sync the Render service from `render.yaml`.
+4. Set `AI_API_KEY`, `ALLOWED_ORIGIN`, and optional contact overrides in Render.
+5. Confirm `GET /api/health` returns `qaSource: yaml`.
+6. Test sample questions against `POST /api/chat`.
+7. Add the Render assistant URL to the existing static website.
 
 ## Testing Checklist
 
@@ -316,7 +301,7 @@ LOG_LEVEL=info
 - Rent, fees, lease terms, and availability are never invented.
 - API keys are not visible in browser code or responses.
 - Render environment variables are configured.
-- `/api/health` returns `ok`.
+- `/api/health` returns `ok` and `qaSource: yaml`.
 - The static website can open the hosted assistant URL.
 
 ## References

@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: catalina-tenant-qa-agent
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build && npm test
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: AI_PROVIDER
+        value: openai
+      - key: AI_MODEL
+        value: gpt-5.4-mini
+      - key: AI_API_KEY
+        sync: false
+      - key: PROPERTY_ID
+        value: catalina-west-36-place
+      - key: QA_FILE_PATH
+        value: qa/rental-qa.yaml
+      - key: ALLOWED_ORIGIN
+        sync: false
+      - key: CONTACT_EMAIL
+        sync: false
+      - key: CONTACT_PHONE
+        sync: false
+      - key: LOG_LEVEL
+        value: info
