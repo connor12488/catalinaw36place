@@ -13,7 +13,7 @@ qa:
       - "What is the monthly rent?"
       - "How much is rent?"
       - "What is the rental price?"
-    approvedAnswer: "[Fill in approved rent amount and any timing notes.]"
+    approvedAnswer: "The monthly rent is $1200."
     escalateWhen:
       - "User asks to negotiate rent."
       - "User asks about future pricing not in this approved answer."
