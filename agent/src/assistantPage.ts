@@ -39,12 +39,12 @@ export function getAssistantPage(): string {
 
     header {
       border-bottom: 1px solid var(--line);
-      padding: 16px;
+      padding: 12px;
     }
 
     h1 {
       margin: 0;
-      font-size: 18px;
+      font-size: 16px;
       line-height: 1.2;
       font-weight: 700;
     }
@@ -59,18 +59,18 @@ export function getAssistantPage(): string {
     .messages {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       overflow-y: auto;
-      padding: 16px;
+      padding: 12px;
       background: var(--bg);
     }
 
     .message {
-      max-width: 86%;
+      max-width: 88%;
       border: 1px solid var(--line);
       border-radius: 8px;
-      padding: 10px 12px;
-      font-size: 14px;
+      padding: 8px 10px;
+      font-size: 13px;
       line-height: 1.45;
       white-space: pre-wrap;
     }
@@ -97,7 +97,7 @@ export function getAssistantPage(): string {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      padding: 0 16px 12px;
+      padding: 0 12px 10px;
       background: var(--bg);
     }
 
@@ -117,12 +117,12 @@ export function getAssistantPage(): string {
       grid-template-columns: 1fr auto;
       gap: 8px;
       border-top: 1px solid var(--line);
-      padding: 12px;
+      padding: 10px;
       background: #ffffff;
     }
 
     textarea {
-      min-height: 44px;
+      min-height: 40px;
       max-height: 120px;
       resize: vertical;
       border: 1px solid var(--line);
@@ -134,7 +134,7 @@ export function getAssistantPage(): string {
     }
 
     button[type="submit"] {
-      width: 84px;
+      width: 72px;
       border: 0;
       border-radius: 8px;
       background: var(--accent);
@@ -237,4 +237,3 @@ export function getAssistantPage(): string {
 </body>
 </html>`;
 }
-

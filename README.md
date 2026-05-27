@@ -169,7 +169,7 @@ Returns the iframe-ready tenant chat page. The static website can embed it with:
 <iframe
   src="https://catalinaw36place.onrender.com/assistant"
   title="Tenant Q&A Assistant"
-  style="width:100%; height:600px; border:0;"
+  style="width:100%; max-width:760px; height:460px; border:0;"
 ></iframe>
 ```
 
