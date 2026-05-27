@@ -288,6 +288,31 @@ curl -X POST http://localhost:10000/api/chat \
 
 The `sample-site` folder contains a small static page based on the Catalina Place home page with the assistant embedded as an iframe.
 
+### Install Docker
+
+Check whether Docker is available:
+
+```bash
+docker --version
+docker ps
+```
+
+If Docker is not installed, install Docker Desktop:
+
+- macOS: install Docker Desktop from `https://www.docker.com/products/docker-desktop/`
+- Windows: install Docker Desktop from `https://www.docker.com/products/docker-desktop/`
+- Linux: install Docker Engine from `https://docs.docker.com/engine/install/`
+
+After installing Docker Desktop, start the Docker app and wait until it says Docker is running. Then rerun:
+
+```bash
+docker ps
+```
+
+If `docker ps` prints running containers or an empty table, Docker is ready.
+
+### Run The Sample Site
+
 Build and run the sample site:
 
 ```bash
@@ -311,6 +336,18 @@ To test against a local agent container running on `localhost:10000`, open:
 
 ```text
 http://localhost:8080/?assistant=http://localhost:10000/assistant
+```
+
+If port `8080` is already in use, run the sample site on another local port:
+
+```bash
+docker run --rm -p 8081:80 catalina-assistant-sample
+```
+
+Then open:
+
+```text
+http://localhost:8081
 ```
 
 ## Render Deployment
