@@ -284,6 +284,35 @@ curl -X POST http://localhost:10000/api/chat \
   -d '{"message":"Are pets allowed?"}'
 ```
 
+## Local Iframe Test Site
+
+The `sample-site` folder contains a small static page based on the Catalina Place home page with the assistant embedded as an iframe.
+
+Build and run the sample site:
+
+```bash
+docker build -t catalina-assistant-sample ./sample-site
+docker run --rm -p 8080:80 catalina-assistant-sample
+```
+
+Open:
+
+```text
+http://localhost:8080
+```
+
+By default, it embeds:
+
+```text
+https://catalinaw36place.onrender.com/assistant
+```
+
+To test against a local agent container running on `localhost:10000`, open:
+
+```text
+http://localhost:8080/?assistant=http://localhost:10000/assistant
+```
+
 ## Render Deployment
 
 Use one Render Free Web Service for the agent API.
