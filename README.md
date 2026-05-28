@@ -284,6 +284,58 @@ curl -X POST http://localhost:10000/api/chat \
   -d '{"message":"Are pets allowed?"}'
 ```
 
+## Vercel Postgres Smoke Test
+
+Use this only when testing a Vercel Marketplace Postgres database. The live assistant does not require Postgres.
+
+Create `.env.local` from Vercel:
+
+```bash
+vercel env pull .env.local
+```
+
+Or copy the example and paste values from the Vercel project settings:
+
+```bash
+cp .env.local.example .env.local
+```
+
+Required `.env.local` value:
+
+```bash
+POSTGRES_URL=postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require
+```
+
+The script also accepts either of these names if your Vercel storage integration provides them instead:
+
+```bash
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require
+POSTGRES_URL_NON_POOLING=postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require
+```
+
+Optional:
+
+```bash
+SAMPLE_TABLE_NAME=tenant_qa_smoke_test
+```
+
+Install the Python dependency and create the smoke-test table:
+
+```bash
+python3 -m pip install -r scripts/requirements.txt
+python3 scripts/create_simple_table.py
+```
+
+The script creates a table with this shape:
+
+```sql
+CREATE TABLE IF NOT EXISTS tenant_qa_smoke_test (
+  id BIGSERIAL PRIMARY KEY,
+  label TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+```
+
 ## Local Iframe Test Site
 
 The `sample-site` folder contains a small static page based on the Catalina Place home page with the assistant embedded as an iframe.

@@ -3,6 +3,8 @@ dist/
 .env
 .env.*
 !.env.example
+!.env.local.example
 npm-debug.log*
 coverage/
-
+__pycache__/
+*.pyc
