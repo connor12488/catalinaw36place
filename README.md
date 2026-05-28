@@ -453,17 +453,24 @@ python3 -m pip install -r scripts/requirements.txt
 python3 scripts/apply_sql.py apps/vercel-dashboard/db/001_qa_entries.sql
 ```
 
-Import the existing YAML Q&A into Vercel Postgres:
+Create/populate `qa_entries` from `qa/rental-qa.yaml` in one command:
 
 ```bash
-python3 scripts/import_yaml_qa.py --dry-run
-python3 scripts/import_yaml_qa.py
+python3 scripts/populate_qa_entries.py --dry-run
+python3 scripts/populate_qa_entries.py
+```
+
+Or use npm:
+
+```bash
+npm run db:qa:populate:dry-run
+npm run db:qa:populate
 ```
 
 By default, the import keeps existing database edits and only inserts missing rows by `source_key`. To refresh database rows from the YAML file again:
 
 ```bash
-python3 scripts/import_yaml_qa.py --overwrite
+npm run db:qa:populate:overwrite
 ```
 
 Or apply the schema with `psql` from the app folder:
@@ -553,8 +560,25 @@ Admin-only APIs:
 
 - `GET /api/admin/qa`
 - `POST /api/admin/qa`
+- `GET /api/admin/qa/:id`
 - `PUT /api/admin/qa/:id`
+- `PATCH /api/admin/qa/:id`
 - `DELETE /api/admin/qa/:id`
+
+Example create request after logging in:
+
+```bash
+curl -X POST https://YOUR-VERCEL-APP.vercel.app/api/admin/qa \
+  -H "Content-Type: application/json" \
+  -b cookies.txt \
+  -d '{
+    "question": "Is laundry available?",
+    "answer": "Each unit comes with a washer and dryer.",
+    "tags": ["laundry", "washer", "dryer"],
+    "active": true,
+    "sortOrder": 10
+  }'
+```
 
 ### Vercel Test Plan
 

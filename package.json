@@ -14,7 +14,10 @@
     "start:vercel": "npm --prefix apps/vercel-dashboard run start",
     "test": "npm --workspace agent run test",
     "test:vercel": "npm --prefix apps/vercel-dashboard run test",
-    "typecheck": "npm --workspace agent run typecheck"
+    "typecheck": "npm --workspace agent run typecheck",
+    "db:qa:populate": "python3 scripts/populate_qa_entries.py",
+    "db:qa:populate:overwrite": "python3 scripts/populate_qa_entries.py --overwrite",
+    "db:qa:populate:dry-run": "python3 scripts/populate_qa_entries.py --dry-run"
   },
   "engines": {
     "node": ">=20"
