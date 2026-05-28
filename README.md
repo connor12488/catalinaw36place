@@ -385,13 +385,15 @@ Build Command: npm run build
 Install Command: npm install
 ```
 
-Add Neon Postgres from the Vercel Marketplace. Vercel should inject `DATABASE_URL` into the project environment.
+Add Neon Postgres from the Vercel Marketplace. Vercel may inject `DATABASE_URL`, `POSTGRES_URL`, or both into the project environment. The app accepts `DATABASE_URL`, `POSTGRES_URL`, or `POSTGRES_URL_NON_POOLING`.
 
 Required Vercel environment variables:
 
 ```bash
 QA_SOURCE=db
 DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require
+# Or use POSTGRES_URL if that is the variable Vercel gave you.
+# POSTGRES_URL=postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require
 AI_GATEWAY_API_KEY=replace-with-vercel-ai-gateway-key
 AI_MODEL=openai/gpt-5-mini
 ADMIN_PASSWORD_HASH=replace-with-generated-hash
