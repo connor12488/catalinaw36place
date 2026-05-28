@@ -4,11 +4,13 @@ declare global {
   var __tenantQaSql: Sql | undefined;
 }
 
+const CONNECTION_ENV_NAMES = ["DATABASE_URL", "POSTGRES_URL", "POSTGRES_URL_NON_POOLING"] as const;
+
 export function getSql(): Sql {
-  const connectionUrl = process.env.DATABASE_URL;
+  const connectionUrl = getConnectionUrl();
 
   if (!connectionUrl) {
-    throw new Error("Missing DATABASE_URL. Add Neon Postgres from Vercel Marketplace or set DATABASE_URL locally.");
+    throw new Error(`Missing Postgres connection string. Set one of: ${CONNECTION_ENV_NAMES.join(", ")}.`);
   }
 
   if (!globalThis.__tenantQaSql) {
@@ -19,4 +21,16 @@ export function getSql(): Sql {
   }
 
   return globalThis.__tenantQaSql;
+}
+
+function getConnectionUrl(): string | undefined {
+  for (const envName of CONNECTION_ENV_NAMES) {
+    const value = process.env[envName];
+
+    if (value) {
+      return value;
+    }
+  }
+
+  return undefined;
 }

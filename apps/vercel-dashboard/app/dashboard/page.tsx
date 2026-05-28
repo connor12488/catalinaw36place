@@ -81,7 +81,7 @@ function DashboardLoadError({ qaSource, error }: { qaSource: "yaml" | "db"; erro
             <h3 className="text-sm font-semibold text-ink">Quick checks</h3>
             <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm leading-6 text-slate-700">
               <li>Set Vercel env var <code>QA_SOURCE=db</code>.</li>
-              <li>Set Vercel env var <code>DATABASE_URL</code> from Neon or Supabase.</li>
+              <li>Set Vercel env var <code>DATABASE_URL</code> or <code>POSTGRES_URL</code> from Neon or Supabase.</li>
               <li>Run <code>python3 scripts/populate_qa_entries.py</code> from the repo root to create and seed <code>qa_entries</code>.</li>
               <li>Open <code>/api/health</code> and confirm it returns <code>qaSource: "db"</code> with a Q&A count.</li>
             </ol>
