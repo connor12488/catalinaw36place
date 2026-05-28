@@ -84,9 +84,17 @@ const script = String.raw`
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message })
       });
-      const payload = await response.json();
+      const contentType = response.headers.get("content-type") || "";
+      const payload = contentType.includes("application/json") ? await response.json() : { answer: await response.text() };
+
+      if (!response.ok) {
+        addMessage(payload.answer || payload.error || "The assistant is not configured yet. Please contact property management directly.", "bot");
+        return;
+      }
+
       addMessage(payload.answer || "Please contact property management for the most accurate current information.", "bot");
-    } catch {
+    } catch (error) {
+      console.error("Tenant Q&A assistant request failed", error);
       addMessage("I could not reach the assistant. Please contact property management directly.", "bot");
     } finally {
       button.disabled = false;

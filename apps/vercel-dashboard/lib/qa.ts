@@ -13,6 +13,8 @@ type QaRow = {
   updated_at: Date | string;
 };
 
+const TEXT_ARRAY_OID = 1009;
+
 function toIso(value: Date | string): string {
   return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
 }
@@ -104,7 +106,7 @@ export async function createQaEntry(input: QaEntryInput): Promise<QaEntry> {
   const sql = getSql();
   const rows = await sql<QaRow[]>`
     INSERT INTO qa_entries (source_key, question, answer, tags, active, sort_order)
-    VALUES (${data.sourceKey}, ${data.question}, ${data.answer}, ${sql.array(data.tags, "text")}, ${data.active}, ${data.sortOrder})
+    VALUES (${data.sourceKey}, ${data.question}, ${data.answer}, ${sql.array(data.tags, TEXT_ARRAY_OID)}, ${data.active}, ${data.sortOrder})
     RETURNING id, source_key, question, answer, tags, active, sort_order, created_at, updated_at
   `;
 
@@ -119,7 +121,7 @@ export async function updateQaEntry(id: number, input: QaEntryInput): Promise<Qa
     SET
       question = ${data.question},
       answer = ${data.answer},
-      tags = ${sql.array(data.tags, "text")},
+      tags = ${sql.array(data.tags, TEXT_ARRAY_OID)},
       active = ${data.active},
       sort_order = ${data.sortOrder}
     WHERE id = ${id}
