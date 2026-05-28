@@ -20,7 +20,24 @@ export async function POST(request: NextRequest) {
   }
 
   const response = jsonRequest ? NextResponse.json({ ok: true }) : NextResponse.redirect(new URL("/dashboard", request.url), 303);
-  setSessionCookie(response);
+
+  try {
+    setSessionCookie(response);
+  } catch (error) {
+    if (jsonRequest) {
+      return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });
+    }
+
+    return NextResponse.redirect(new URL("/login?error=config", request.url), 303);
+  }
 
   return response;
+}
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return "Unable to create admin session.";
 }
