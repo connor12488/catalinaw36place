@@ -6,7 +6,7 @@ This branch is refactored for Vercel:
 
 - Vercel hosts the Next.js app in `apps/vercel-dashboard`.
 - Neon Postgres stores approved tenant Q&A in `qa_entries`.
-- Vercel AI Gateway rewrites only approved answers into tenant-facing responses.
+- Vercel AI Gateway can choose the best approved Q&A ID when local matching is weak, then rewrites only approved answers into tenant-facing responses.
 - Squarespace embeds the assistant with `/embed/assistant.js`.
 
 The older Render + YAML implementation remains in the repo as a working reference and seed source.
@@ -38,7 +38,7 @@ In scope:
 - Define and maintain the rental Q&A list in Postgres.
 - Host a Next.js dashboard and assistant API on Vercel.
 - Match tenant questions to active approved database answers.
-- Use Vercel AI Gateway only to rewrite approved answers into concise tenant-facing responses.
+- Use Vercel AI Gateway for guarded Q&A intent matching and approved-answer rewriting.
 - Escalate to property management when an approved answer is missing.
 - Import the existing Render YAML Q&A into Postgres during migration.
 
@@ -63,8 +63,11 @@ flowchart LR
   embed --> js[/embed/assistant.js/]
   js --> chat[POST /api/chat]
   chat --> db
-  chat --> match[Match Approved Q&A]
-  match --> approved{Approved Answer?}
+  chat --> match[Local Match Approved Q&A]
+  match --> weak{Low Confidence?}
+  weak -->|Yes| aiMatch[AI Chooses Approved Q&A ID]
+  weak -->|No| approved{Approved Answer?}
+  aiMatch --> approved
   approved -->|No| fallback[Contact Property Management]
   approved -->|Yes| gateway[Vercel AI Gateway]
   gateway --> response[Concise Tenant Answer]
@@ -77,12 +80,15 @@ Tenant website
   -> loads /embed/assistant.js
   -> POST /api/chat
   -> Vercel app reads active qa_entries rows
-  -> app matches tenant question to approved Q&A entry
-  -> app calls Vercel AI Gateway
+  -> app locally matches tenant question to approved Q&A entry
+  -> if local match is weak, AI Gateway chooses one approved Q&A ID
+  -> app calls Vercel AI Gateway to rewrite the approved answer
   -> app returns concise answer or escalation fallback
 ```
 
 If a matched database answer still contains placeholder text, the app intentionally escalates instead of showing the placeholder to tenants.
+
+AI is never allowed to invent property facts. It can only select from approved Q&A IDs and rewrite the approved answer.
 
 ## Q&A Source
 
@@ -216,6 +222,7 @@ Response:
 {
   "answer": "Approved answer from qa_entries, or the standard escalation answer.",
   "matchedQuestionId": "pets",
+  "matchMethod": "ai",
   "escalationRecommended": false
 }
 ```
@@ -355,8 +362,11 @@ flowchart LR
   embed --> js[/embed/assistant.js/]
   js --> chat[POST /api/chat]
   chat --> db
-  chat --> match[Match Approved Q&A]
-  match --> approved{Approved Answer?}
+  chat --> match[Local Match Approved Q&A]
+  match --> weak{Low Confidence?}
+  weak -->|Yes| aiMatch[AI Chooses Approved Q&A ID]
+  weak -->|No| approved{Approved Answer?}
+  aiMatch --> approved
   approved -->|No| contact[Contact Property Management]
   approved -->|Yes| gateway[Vercel AI Gateway]
   gateway --> answer[Tenant Answer]
@@ -534,6 +544,7 @@ Response:
 {
   "answer": "Approved answer from the database, optionally rewritten by AI Gateway.",
   "matchedQuestionId": "rent-monthly",
+  "matchMethod": "ai",
   "escalationRecommended": false
 }
 ```
@@ -553,6 +564,7 @@ Admin-only APIs:
 - Unauthenticated users cannot access admin APIs.
 - `/api/health` returns `qaSource: db`.
 - `POST /api/chat` answers known tenant questions from active database rows.
+- Weak local matches can return `"matchMethod": "ai"` when AI Gateway selects the approved Q&A ID.
 - Unknown questions return the property management fallback contact.
 - Placeholder answers, legal questions, emergency messages, and sensitive personal data are escalated.
 - `/embed/assistant.js` loads on desktop and mobile Squarespace pages.

@@ -30,7 +30,15 @@ const STOP_WORDS = new Set([
 ]);
 
 function normalize(value: string): string {
-  return value.toLowerCase().replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+  return value
+    .toLowerCase()
+    .replace(/['\u2019]s\b/g, " is")
+    .replace(/['\u2019]re\b/g, " are")
+    .replace(/['\u2019]m\b/g, " am")
+    .replace(/n['\u2019]t\b/g, " not")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function tokenize(value: string): Set<string> {
