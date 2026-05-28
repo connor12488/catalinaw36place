@@ -75,7 +75,23 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const entries = await listRuntimeQaEntries();
+  let entries: QaEntry[];
+
+  try {
+    entries = await listRuntimeQaEntries();
+  } catch (error) {
+    return jsonResponse(
+      request,
+      {
+        answer: contactFallback(),
+        matchedQuestionId: null,
+        escalationRecommended: true,
+        escalationReason: error instanceof Error ? `qa-source-unavailable: ${error.message}` : "qa-source-unavailable"
+      },
+      503
+    );
+  }
+
   const match = findBestMatch(message, entries);
 
   if (!match) {
