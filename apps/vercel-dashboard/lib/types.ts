@@ -22,6 +22,7 @@ export type QaEntryInput = {
 export type ChatResponse = {
   answer: string;
   matchedQuestionId: string | null;
+  matchMethod?: "local" | "ai";
   escalationRecommended: boolean;
   escalationReason?: string;
 };

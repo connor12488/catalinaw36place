@@ -10,9 +10,61 @@ import type { ChatResponse, QaEntry } from "@/lib/types";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+const LOCAL_MATCH_CONFIDENT_SCORE = 0.45;
+
 function jsonResponse(request: Request, payload: ChatResponse, status = 200) {
   const cors = getCorsHeaders(request);
   return NextResponse.json(payload, { status, headers: cors.headers });
+}
+
+function entryKey(entry: QaEntry): string {
+  return entry.sourceKey || String(entry.id);
+}
+
+function parseAiMatchId(text: string): string | null {
+  const trimmed = text.trim();
+
+  try {
+    const parsed = JSON.parse(trimmed) as { id?: string | null };
+    return parsed.id ? String(parsed.id) : null;
+  } catch {
+    const match = trimmed.match(/"id"\s*:\s*"([^"]+)"/);
+    return match?.[1] || null;
+  }
+}
+
+async function findAiAssistedMatch(message: string, entries: QaEntry[]): Promise<QaEntry | null> {
+  if (!process.env.AI_GATEWAY_API_KEY || entries.length === 0) {
+    return null;
+  }
+
+  const candidates = entries.map((entry) => ({
+    id: entryKey(entry),
+    question: entry.question,
+    tags: entry.tags.slice(0, 12)
+  }));
+
+  try {
+    const result = await generateText({
+      model: getAiModel(),
+      system:
+        "You classify tenant rental questions. Choose only one approved Q&A id from the provided candidates. If none fit, return null. Do not answer the tenant question.",
+      prompt: [
+        `Tenant question: ${message}`,
+        `Approved Q&A candidates: ${JSON.stringify(candidates)}`,
+        'Return JSON only in this exact shape: {"id":"candidate-id"} or {"id":null}.'
+      ].join("\n")
+    });
+    const selectedId = parseAiMatchId(result.text);
+
+    if (!selectedId) {
+      return null;
+    }
+
+    return entries.find((entry) => entryKey(entry) === selectedId) || null;
+  } catch {
+    return null;
+  }
 }
 
 async function rewriteApprovedAnswer(message: string, entry: QaEntry): Promise<string> {
@@ -92,7 +144,13 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const match = findBestMatch(message, entries);
+  const localMatch = findBestMatch(message, entries);
+  const aiEntry =
+    !localMatch || localMatch.score < LOCAL_MATCH_CONFIDENT_SCORE
+      ? await findAiAssistedMatch(message, entries)
+      : null;
+  const match = aiEntry ? { entry: aiEntry, score: 1 } : localMatch;
+  const matchMethod = aiEntry ? "ai" : match ? "local" : undefined;
 
   if (!match) {
     return jsonResponse(request, {
@@ -106,7 +164,8 @@ export async function POST(request: NextRequest) {
   if (isPlaceholderAnswer(match.entry.answer)) {
     return jsonResponse(request, {
       answer: contactFallback(),
-      matchedQuestionId: match.entry.sourceKey || String(match.entry.id),
+      matchedQuestionId: entryKey(match.entry),
+      matchMethod,
       escalationRecommended: true,
       escalationReason: "placeholder-answer"
     });
@@ -116,7 +175,8 @@ export async function POST(request: NextRequest) {
 
   return jsonResponse(request, {
     answer,
-    matchedQuestionId: match.entry.sourceKey || String(match.entry.id),
+    matchedQuestionId: entryKey(match.entry),
+    matchMethod,
     escalationRecommended: false
   });
 }
