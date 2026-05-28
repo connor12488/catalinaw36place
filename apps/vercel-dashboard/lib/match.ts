@@ -71,7 +71,7 @@ function jaccard(left: Set<string>, right: Set<string>): number {
 
   const intersection = [...left].filter((token) => right.has(token)).length;
   const union = new Set([...left, ...right]).size;
-  return intersection / union.size;
+  return intersection / union;
 }
 
 function scoreCandidate(message: string, candidate: string): number {
