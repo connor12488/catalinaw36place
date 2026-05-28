@@ -101,6 +101,17 @@ export async function listActiveQaEntries(): Promise<QaEntry[]> {
   return rows.map(mapRow);
 }
 
+export async function getQaEntry(id: number): Promise<QaEntry | null> {
+  const sql = getSql();
+  const rows = await sql<QaRow[]>`
+    SELECT id, source_key, question, answer, tags, active, sort_order, created_at, updated_at
+    FROM qa_entries
+    WHERE id = ${id}
+  `;
+
+  return rows[0] ? mapRow(rows[0]) : null;
+}
+
 export async function createQaEntry(input: QaEntryInput): Promise<QaEntry> {
   const data = normalizeInput(input);
   const sql = getSql();
@@ -129,6 +140,24 @@ export async function updateQaEntry(id: number, input: QaEntryInput): Promise<Qa
   `;
 
   return rows[0] ? mapRow(rows[0]) : null;
+}
+
+export async function patchQaEntry(id: number, input: Partial<QaEntryInput>): Promise<QaEntry | null> {
+  const existing = await getQaEntry(id);
+
+  if (!existing) {
+    return null;
+  }
+
+  const merged: QaEntryInput = {
+    question: input.question ?? existing.question,
+    answer: input.answer ?? existing.answer,
+    tags: input.tags ?? existing.tags,
+    active: input.active ?? existing.active,
+    sortOrder: input.sortOrder ?? existing.sortOrder
+  };
+
+  return updateQaEntry(id, merged);
 }
 
 export async function deleteQaEntry(id: number): Promise<boolean> {
