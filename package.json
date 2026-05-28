@@ -17,7 +17,9 @@
     "typecheck": "npm --workspace agent run typecheck",
     "db:qa:populate": "python3 scripts/populate_qa_entries.py",
     "db:qa:populate:overwrite": "python3 scripts/populate_qa_entries.py --overwrite",
-    "db:qa:populate:dry-run": "python3 scripts/populate_qa_entries.py --dry-run"
+    "db:qa:populate:dry-run": "python3 scripts/populate_qa_entries.py --dry-run",
+    "db:qa:export": "python3 scripts/export_qa_entries.py",
+    "db:qa:export:yaml": "python3 scripts/export_qa_entries.py --output qa/rental-qa.yaml --overwrite"
   },
   "engines": {
     "node": ">=20"

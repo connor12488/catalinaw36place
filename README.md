@@ -475,6 +475,20 @@ By default, the import keeps existing database edits and only inserts missing ro
 npm run db:qa:populate:overwrite
 ```
 
+Export current database Q&A back to YAML as a fallback:
+
+```bash
+npm run db:qa:export
+```
+
+That writes `qa/rental-qa.from-db.yaml` and leaves the current `qa/rental-qa.yaml` untouched. To replace the runtime YAML file, use:
+
+```bash
+npm run db:qa:export:yaml
+```
+
+The export uses `qa/rental-qa.yaml` as a template when possible so existing property metadata, categories, alternate questions, and escalation notes are preserved. It exports active database rows by default because YAML mode does not support the dashboard's active/inactive toggle.
+
 Or apply the schema with `psql` from the app folder:
 
 ```bash
@@ -514,7 +528,7 @@ The chat API reads active rows from `qa_entries`. If `AI_GATEWAY_API_KEY` is mis
 2. Deploy the Vercel project with root directory `apps/vercel-dashboard`.
 3. Add Neon Postgres and required Vercel environment variables.
 4. Apply `apps/vercel-dashboard/db/001_qa_entries.sql`.
-5. Run `python3 scripts/import_yaml_qa.py` to copy `qa/rental-qa.yaml` into `qa_entries`.
+5. Run `python3 scripts/populate_qa_entries.py` to copy `qa/rental-qa.yaml` into `qa_entries`.
 6. Log in to `/dashboard` and update any placeholder answers.
 7. Test `/api/health`, `/assistant`, and `POST /api/chat`.
 8. Replace the old Render iframe on Squarespace with the Vercel embed script.
