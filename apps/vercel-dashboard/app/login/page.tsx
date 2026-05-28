@@ -4,7 +4,8 @@ type LoginPageProps = {
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = searchParams ? await searchParams : {};
-  const hasError = Boolean(params.error);
+  const error = Array.isArray(params.error) ? params.error[0] : params.error;
+  const errorMessage = error === "config" ? "Login server configuration is incomplete. Check SESSION_SECRET." : "Invalid password.";
 
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-10">
@@ -22,7 +23,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               type="password"
             />
           </label>
-          {hasError ? <p className="text-sm font-medium text-red-700">Invalid password.</p> : null}
+          {error ? <p className="text-sm font-medium text-red-700">{errorMessage}</p> : null}
           <button className="w-full rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white" type="submit">
             Sign In
           </button>
