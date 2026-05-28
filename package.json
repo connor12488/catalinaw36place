@@ -7,13 +7,16 @@
   ],
   "scripts": {
     "dev": "npm --workspace agent run dev",
+    "dev:vercel": "npm --prefix apps/vercel-dashboard run dev",
     "build": "npm --workspace agent run build",
+    "build:vercel": "npm --prefix apps/vercel-dashboard run build",
     "start": "npm --workspace agent run start",
+    "start:vercel": "npm --prefix apps/vercel-dashboard run start",
     "test": "npm --workspace agent run test",
+    "test:vercel": "npm --prefix apps/vercel-dashboard run test",
     "typecheck": "npm --workspace agent run typecheck"
   },
   "engines": {
     "node": ">=20"
   }
 }
-

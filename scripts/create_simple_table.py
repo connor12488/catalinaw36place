@@ -29,43 +29,11 @@ except ImportError:
     )
     raise SystemExit(1)
 
+from db_url import get_connection_url, load_env_file
 
-CONNECTION_ENV_NAMES = (
-    "POSTGRES_URL",
-    "DATABASE_URL",
-    "POSTGRES_URL_NON_POOLING",
-)
 
 DEFAULT_TABLE_NAME = "tenant_qa_smoke_test"
 VALID_IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
-
-
-def load_env_file(path: Path) -> None:
-    if not path.exists():
-        return
-
-    for raw_line in path.read_text(encoding="utf-8").splitlines():
-        line = raw_line.strip()
-
-        if not line or line.startswith("#") or "=" not in line:
-            continue
-
-        key, value = line.split("=", 1)
-        key = key.strip()
-        value = value.strip().strip('"').strip("'")
-
-        if key and key not in os.environ:
-            os.environ[key] = value
-
-
-def get_connection_url() -> str:
-    for env_name in CONNECTION_ENV_NAMES:
-        value = os.getenv(env_name)
-        if value:
-            return value
-
-    names = ", ".join(CONNECTION_ENV_NAMES)
-    raise RuntimeError(f"Missing Postgres connection string. Set one of: {names}")
 
 
 def get_table_name() -> str:
@@ -122,4 +90,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
