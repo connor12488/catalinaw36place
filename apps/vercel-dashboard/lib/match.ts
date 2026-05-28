@@ -21,11 +21,13 @@ const STOP_WORDS = new Set([
   "of",
   "on",
   "or",
+  "there",
   "the",
   "to",
   "what",
   "when",
   "where",
+  "who",
   "with"
 ]);
 
@@ -45,26 +47,50 @@ function tokenize(value: string): Set<string> {
   return new Set(
     normalize(value)
       .split(" ")
+      .map((token) => stemToken(token))
       .filter((token) => token.length > 1 && !STOP_WORDS.has(token))
   );
 }
 
-function jaccard(left: Set<string>, right: Set<string>): number {
-  const union = new Set([...left, ...right]);
+function stemToken(token: string): string {
+  if (token.endsWith("ies") && token.length > 4) {
+    return `${token.slice(0, -3)}y`;
+  }
 
-  if (union.size === 0) {
+  if (token.endsWith("s") && !token.endsWith("ss") && token.length > 3) {
+    return token.slice(0, -1);
+  }
+
+  return token;
+}
+
+function jaccard(left: Set<string>, right: Set<string>): number {
+  if (left.size === 0 || right.size === 0) {
     return 0;
   }
 
-  let intersection = 0;
+  const intersection = [...left].filter((token) => right.has(token)).length;
+  const union = new Set([...left, ...right]).size;
+  return intersection / union.size;
+}
 
-  for (const token of left) {
-    if (right.has(token)) {
-      intersection += 1;
-    }
+function scoreCandidate(message: string, candidate: string): number {
+  const normalizedMessage = normalize(message);
+  const normalizedCandidate = normalize(candidate);
+
+  if (!normalizedCandidate) {
+    return 0;
   }
 
-  return intersection / union.size;
+  if (normalizedMessage === normalizedCandidate) {
+    return 1;
+  }
+
+  if (normalizedMessage.includes(normalizedCandidate) || normalizedCandidate.includes(normalizedMessage)) {
+    return 0.95;
+  }
+
+  return jaccard(tokenize(normalizedMessage), tokenize(normalizedCandidate));
 }
 
 export function isPlaceholderAnswer(answer: string): boolean {
@@ -74,30 +100,20 @@ export function isPlaceholderAnswer(answer: string): boolean {
 }
 
 export function findBestMatch(message: string, entries: QaEntry[]): MatchResult | null {
-  const normalizedMessage = normalize(message);
-  const messageTokens = tokenize(message);
   let best: MatchResult | null = null;
 
   for (const entry of entries) {
-    const searchable = `${entry.question} ${entry.tags.join(" ")}`;
-    const normalizedSearchable = normalize(searchable);
-    const searchableTokens = tokenize(searchable);
-    let score = jaccard(messageTokens, searchableTokens);
-
-    if (normalizedMessage === normalize(entry.question)) {
-      score += 0.65;
-    } else if (normalizedSearchable.includes(normalizedMessage) || normalizedMessage.includes(normalize(entry.question))) {
-      score += 0.35;
-    }
-
-    if (entry.tags.some((tag) => normalizedMessage.includes(normalize(tag)))) {
-      score += 0.12;
-    }
+    const candidates = [
+      entry.question,
+      entry.sourceKey?.replace(/-/g, " "),
+      ...entry.tags
+    ].filter(Boolean) as string[];
+    const score = Math.max(...candidates.map((candidate) => scoreCandidate(message, candidate)));
 
     if (!best || score > best.score) {
       best = { entry, score };
     }
   }
 
-  return best && best.score >= 0.2 ? best : null;
+  return best && best.score >= 0.22 ? best : null;
 }
