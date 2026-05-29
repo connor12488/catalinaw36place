@@ -2,6 +2,7 @@ import cors from "cors";
 import express from "express";
 import { z } from "zod";
 import { answerQuestion } from "./answerQuestion.js";
+import { getAssistantPage } from "./assistantPage.js";
 import { getConfig } from "./config.js";
 import { loadRentalQa } from "./loadQa.js";
 import type { RentalQa } from "./types.js";
@@ -25,6 +26,10 @@ app.get("/", (_req, res) => {
     service: "Catalina West 36 Place Tenant Q&A Agent",
     status: "ok"
   });
+});
+
+app.get("/assistant", (_req, res) => {
+  res.type("html").send(getAssistantPage());
 });
 
 app.get("/api/health", async (_req, res) => {

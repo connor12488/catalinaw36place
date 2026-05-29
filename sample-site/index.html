@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Catalina Place Assistant Test</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #182033;
+      --muted: #657083;
+      --line: #dbe1ea;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --accent: #1f6feb;
+      --soft: #eef5ff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.94);
+      padding: 14px clamp(16px, 4vw, 48px);
+      backdrop-filter: blur(10px);
+    }
+
+    .brand {
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      font-size: 14px;
+    }
+
+    nav a {
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+      gap: 28px;
+      align-items: stretch;
+      padding: clamp(24px, 5vw, 64px);
+      background: linear-gradient(180deg, #ffffff, #f4f7fb);
+    }
+
+    .hero-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 420px;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 10px 0 12px;
+      max-width: 740px;
+      font-size: clamp(40px, 7vw, 86px);
+      line-height: 0.95;
+      letter-spacing: 0;
+    }
+
+    .hero-copy p {
+      max-width: 660px;
+      color: var(--muted);
+      font-size: clamp(17px, 2vw, 22px);
+    }
+
+    .hero-card {
+      display: grid;
+      align-content: end;
+      min-height: 420px;
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, rgba(24, 32, 51, 0.08), rgba(24, 32, 51, 0.62)),
+        url("https://images.squarespace-cdn.com/content/v1/6844d1e6779beb2a7e7a43d8/48acc5ec-2d95-4668-b0f5-d7a8ca871d71/Catalina+EXT+1.jpg");
+      background-position: center;
+      background-size: cover;
+      color: white;
+      padding: 22px;
+      overflow: hidden;
+    }
+
+    .hero-card strong {
+      font-size: 24px;
+    }
+
+    .hero-card span {
+      display: block;
+      margin-top: 4px;
+      opacity: 0.88;
+    }
+
+    section {
+      padding: clamp(24px, 5vw, 56px);
+    }
+
+    h2 {
+      margin: 0 0 18px;
+      font-size: clamp(26px, 4vw, 44px);
+      line-height: 1.05;
+    }
+
+    .overview {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 460px);
+      gap: 24px;
+      align-items: start;
+      background: var(--panel);
+    }
+
+    .overview p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .fact-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .fact-list li {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 12px 14px;
+    }
+
+    .units {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .unit {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 18px;
+    }
+
+    .unit h3 {
+      margin: 0 0 8px;
+      font-size: 19px;
+    }
+
+    .price {
+      color: var(--accent);
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .unit p {
+      color: var(--muted);
+    }
+
+    .amenities {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .amenities li {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 12px 14px;
+    }
+
+    .assistant-section {
+      display: grid;
+      grid-template-columns: minmax(0, 0.65fr) minmax(520px, 760px);
+      gap: 22px;
+      align-items: stretch;
+      background: #ffffff;
+    }
+
+    .assistant-note {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+      padding: 18px;
+    }
+
+    .assistant-note code {
+      display: block;
+      overflow-wrap: anywhere;
+      margin-top: 10px;
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 10px;
+      font-size: 13px;
+    }
+
+    .assistant-frame {
+      width: 100%;
+      min-height: 460px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+    }
+
+    footer {
+      padding: 28px clamp(16px, 5vw, 56px);
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      background: var(--panel);
+    }
+
+    @media (max-width: 900px) {
+      .hero,
+      .overview,
+      .assistant-section {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-copy,
+      .hero-card {
+        min-height: 300px;
+      }
+
+      .units,
+      .amenities {
+        grid-template-columns: 1fr;
+      }
+
+      .assistant-frame {
+        min-height: 440px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">Catalina Place</div>
+    <nav aria-label="Page sections">
+      <a href="#overview">Overview</a>
+      <a href="#available">Available</a>
+      <a href="#amenities">Amenities</a>
+      <a href="#assistant">Ask AI</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow">USC Off Campus Student Housing</div>
+        <h1>Catalina Place</h1>
+        <p>W 36th Pl, Los Angeles, CA. Student housing steps from USC with furnished room options, security features, rooftop deck access, parking, and flexible lease options.</p>
+      </div>
+      <div class="hero-card" aria-label="Catalina Place exterior image">
+        <div>
+          <strong>Available Units Now</strong>
+          <span>Master rooms and shared-bath bedrooms available.</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="overview" class="overview">
+      <div>
+        <h2>Property Overview</h2>
+        <p>The premier student housing community just steps from the University of Southern California. Featuring newly built townhomes with 6 bedrooms and 5 bathrooms, the property was designed with students and parents in mind.</p>
+        <p>Located within USC's DPS Security Zone and equipped with private security cameras, West 36th & Catalina offers convenience and peace of mind.</p>
+      </div>
+      <ul class="fact-list">
+        <li><strong>Location:</strong> 1171 W36th Place, Los Angeles CA 90007</li>
+        <li><strong>Contact:</strong> Catalina.w36thPlace@gmail.com</li>
+        <li><strong>Phone:</strong> (213)-222-8057</li>
+      </ul>
+    </section>
+
+    <section id="available">
+      <h2>Available to Rent</h2>
+      <div class="units">
+        <article class="unit">
+          <h3>Master Room</h3>
+          <div class="price">$1350/month</div>
+          <p>Private bathroom. Fully furnished with bed, dresser, desk, and chair.</p>
+          <strong>2 available</strong>
+        </article>
+        <article class="unit">
+          <h3>Bedroom</h3>
+          <div class="price">$1150/month</div>
+          <p>Shared bathroom. Fully furnished with bed, dresser, desk, and chair.</p>
+          <strong>2 available</strong>
+        </article>
+        <article class="unit">
+          <h3>Shared Kitchen</h3>
+          <div class="price">Included</div>
+          <p>Fridge, gas stove, dishwasher, and shared dining space.</p>
+          <strong>1 in each building</strong>
+        </article>
+      </div>
+    </section>
+
+    <section id="amenities">
+      <h2>Our Amenities</h2>
+      <ul class="amenities">
+        <li>In-unit washer and dryer</li>
+        <li>Rooftop deck views of Los Angeles</li>
+        <li>Private on-site security and Ring cameras</li>
+        <li>DPS patrolled area</li>
+        <li>Fully furnished room options</li>
+        <li>Fully furnished kitchen and living room</li>
+        <li>Private parking and garage</li>
+        <li>Motorized security gate and secured bike racks</li>
+      </ul>
+    </section>
+
+    <section id="assistant" class="assistant-section">
+      <div class="assistant-note">
+        <h2>Tenant Q&A Test</h2>
+        <p>This local sample page embeds the deployed assistant the same way the production static website can.</p>
+        <p>Override the assistant URL with a query parameter if you are testing a local agent.</p>
+        <code>http://localhost:8080/?assistant=http://localhost:10000/assistant</code>
+      </div>
+      <iframe
+        id="assistant-frame"
+        class="assistant-frame"
+        title="Tenant Q&A Assistant"
+        src="https://catalinaw36place.onrender.com/assistant"
+      ></iframe>
+    </section>
+  </main>
+
+  <footer>
+    Sample local test page for iframe integration. Source content is summarized from catalinaw36place.com for development testing.
+  </footer>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const assistantUrl = params.get("assistant");
+    if (assistantUrl) {
+      document.getElementById("assistant-frame").src = assistantUrl;
+    }
+  </script>
+</body>
+</html>
